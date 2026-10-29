@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LedgerTrace</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div>
+      <h1>LedgerTrace</h1>
+      <p class="muted">Follow the money through a simulated UTXO ledger. Heuristics and leads, never verdicts.</p>
+    </div>
+    <div class="who"><span id="who"></span> <button id="logout" type="button" hidden>Log out</button></div>
+  </header>
+
+  <main id="main">
+    <section id="auth" class="card narrow" aria-labelledby="auth-h">
+      <h2 id="auth-h">Log in</h2>
+      <form id="login-form">
+        <label for="u">Username</label>
+        <input id="u" autocomplete="username" required minlength="3" maxlength="32">
+        <label for="p">Password (10+ characters)</label>
+        <input id="p" type="password" autocomplete="current-password" required minlength="10" maxlength="128">
+        <div class="row">
+          <button type="submit">Log in</button>
+          <button type="button" id="register" class="ghost">Register</button>
+        </div>
+        <p id="auth-msg" class="msg" role="alert"></p>
+      </form>
+    </section>
+
+    <div id="app" hidden>
+      <section class="card" aria-labelledby="ov-h">
+        <h2 id="ov-h">Ledger overview</h2>
+        <dl id="stats" class="kv"></dl>
+      </section>
+
+      <section class="card" aria-labelledby="case-h">
+        <h2 id="case-h">Trace funds</h2>
+        <form id="case-form">
+          <div class="grid3">
+            <div><label for="c-name">Case name</label><input id="c-name" maxlength="80" required value="New case"></div>
+            <div><label for="c-txid">Seed transaction id</label><input id="c-txid" maxlength="16" pattern="[0-9a-f]{16}" required spellcheck="false" class="mono"></div>
+            <div><label for="c-vout">Output index</label><input id="c-vout" type="number" min="0" max="63" value="0"></div>
+            <div><label for="c-method">Taint method</label>
+              <select id="c-method"><option value="haircut">haircut (proportional)</option><option value="poison">poison (all-or-nothing)</option><option value="fifo">fifo (first in, first out)</option></select></div>
+            <div><label for="c-hops">Max hops</label><input id="c-hops" type="number" min="1" max="12" value="8"></div>
+          </div>
+          <div class="row">
+            <button type="submit">Trace</button>
+            <button type="button" id="compare" class="ghost">Compare methods</button>
+            <span id="flag-wrap" hidden>or <button type="button" id="use-flag" class="link"></button></span>
+          </div>
+          <p id="case-msg" class="msg" role="status"></p>
+        </form>
+        <div id="cmp" class="scroll" hidden></div>
+        <h3>Your cases</h3>
+        <ul id="cases" class="plain"></ul>
+      </section>
+
+      <section id="result" class="card" aria-labelledby="res-h" hidden>
+        <div class="rhead">
+          <h2 id="res-h">Case result</h2>
+          <a id="export" class="btn" download>Export Markdown</a>
+        </div>
+        <dl id="exposure" class="kv"></dl>
+        <h3>Flow graph</h3>
+        <p class="muted legend">
+          <span class="dot user"></span> wallet <span class="dot exchange"></span> exchange
+          <span class="dot mixer"></span> mixer <span class="dot thief"></span> flagged source
+          Dashed outline means still unspent. Edge width is the tainted value. A table of the same data follows.
+        </p>
+        <div class="scroll" id="graph"></div>
+        <h3>Hits</h3>
+        <div class="scroll"><table id="hits"><caption class="sr-only">Tainted funds that reached exchanges, mixers or sit dormant</caption>
+          <thead><tr><th scope="col">Kind</th><th scope="col">Address</th><th scope="col">Label</th><th scope="col">Hops</th><th scope="col">Tainted units</th></tr></thead>
+          <tbody></tbody></table></div>
+      </section>
+
+      <section class="card" aria-labelledby="pat-h">
+        <h2 id="pat-h">Detected patterns</h2>
+        <p class="muted">Peel chains, fan-outs, fan-ins and CoinJoin-style transactions. Some are innocent: payroll looks like a fan-out.</p>
+        <div class="scroll"><table id="patterns"><caption class="sr-only">Detected patterns</caption>
+          <thead><tr><th scope="col">Kind</th><th scope="col">Size</th><th scope="col">Detail</th><th scope="col">First tx</th></tr></thead>
+          <tbody></tbody></table></div>
+      </section>
+
+      <section class="card" aria-labelledby="addr-h">
+        <h2 id="addr-h">Address lookup</h2>
+        <form id="addr-form" class="row">
+          <label for="a-in" class="sr-only">Address</label>
+          <input id="a-in" placeholder="sim1usr00001" maxlength="16" spellcheck="false" class="mono grow" required>
+          <button type="submit">Look up</button>
+        </form>
+        <p id="addr-msg" class="msg" role="status"></p>
+        <div id="addr-card"></div>
+      </section>
+
+      <section aria-labelledby="risk-h">
+        <h2 id="risk-h">Highest-risk addresses</h2>
+        <div id="risk" class="cards"></div>
+      </section>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
