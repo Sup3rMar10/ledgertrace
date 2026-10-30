@@ -7,7 +7,7 @@ Loads a simulated UTXO ledger, clusters wallets, spots peel chains, fan-outs and
 ## Favourite finding 🤷
 The payroll batch: a perfectly innocent exchange payout that the fan-out detector flags with total confidence. Heuristics are great at being confidently wrong.
 ## Honest disclaimer ⚠️
-Untested prototype. Leads, not evidence. Every heuristic has failure modes (CoinJoin, shared wallets, address reuse) and the data is simulated. Never accuse anyone based on this.
+Untested prototype. Leads, not evidence. Every heuristic has failure modes (CoinJoin, shared wallets, address reuse) and the data is simulated. Never accuse anyone based on this. Download and use at your own discretion.
 ## Things that went wrong while building this
 - It was written without ever being run, so expect a typo or two on first launch.
 - Three taint methods give three answers on the same ledger, which is the point, but also an uncomfortable demo.
